@@ -3,8 +3,38 @@
 :END:
 
 #+TITLE: Elmacro.
+#+html: <span class="badge-buymeacoffee">
+#+html: <a href="https://www.paypal.me/darkawower" title="Paypal" target="_blank"><img src="https://img.shields.io/badge/paypal-donate-blue.svg" alt="Buy Me A Coffee donate button" /></a>
+#+html: </span>
+#+html: <span class="badge-patreon">
+#+html: <a href="https://patreon.com/artawower" target="_blank" title="Donate to this project using Patreon"><img src="https://img.shields.io/badge/patreon-donate-orange.svg" alt="Patreon donate button" /></a>
+#+html: </span>
+#+html: <a href="https://wakatime.com/badge/github/Artawower/elmacro"><img src="https://wakatime.com/badge/github/Artawower/elmacro.svg" alt="wakatime"></a>
+
 #+DESCRIPTION: Organize your emacs lisp macros.
 #+ID: emacs-lisp-macros
 
 
 Package for executing and storing your named macros persistently.
+
+* Usage 
+#+html: <img src="./images/sombrero.png" align="right" width="18%">
+
+1. Run ~start-kbd-macro~ <your sequence> ~end-kbd-macro~
+2. Define your named macro via ~elmacro-name-last-kbd-macro~
+3. Run ~elmacro-execute-macro~ <your macro name>
+4. Enjoy!
+* Install
+#+BEGIN_SRC emacs-lisp :results silent
+(use-package elmacro
+  :straight (:host github :repo "artawower/elmacro.el")
+  :ensure t
+  :defer t
+  :general (:keymaps 'override
+                     :states 'normal
+                     "SPC me" 'elmacro-execute-macros
+                     "SPC ma" 'elmacro-name-last-kbd-macro))
+#+END_SRC
+
+* Configurations
+~elmacro-macro-file~ - file name of stored macros. Default value is ~~/.emacs.d/elmacro-macros.el~
