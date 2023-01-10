@@ -1,0 +1,10 @@
+:PROPERTIES:
+:ID: emacs-lisp-macros
+:END:
+
+#+TITLE: Elmacro.
+#+DESCRIPTION: Organize your emacs lisp macros.
+#+ID: emacs-lisp-macros
+
+
+Package for executing and storing your named macros persistently.
