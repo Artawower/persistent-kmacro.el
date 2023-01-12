@@ -4,7 +4,8 @@
 
 ;; Author: Artur Yaroshenko <artawower@protonmail.com>
 ;; URL: https://github.com/artawower/elmacro.el
-;; Version: 0.0.1
+;; Package-Requires: ((emacs "28.1"))
+;; Version: 0.0.2
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -24,6 +25,8 @@
 
 ;;; Code:
 
+(require 'subr-x)
+
 (defcustom elmacro-macro-file "~/.emacs.d/elmacro-macros.el"
   "File where macros are stored."
   :type 'string
@@ -40,7 +43,8 @@
   (interactive)
   (with-current-buffer (get-buffer-create elmacro--tmp-buffer)
     (insert-file-contents elmacro-macro-file)
-    (setq elmacro--named-functions (eval (car (read-from-string (format "'%s" (buffer-string)))))))
+    (unless (equal (string-trim (buffer-string)) "")
+      (setq elmacro--named-functions (eval (car (read-from-string (format "'%s" (buffer-string))))))))
   (kill-buffer elmacro--tmp-buffer))
 
 (defun elmacro-save-session ()
@@ -63,10 +67,12 @@ SYMBOL is the name of the macro."
   (name-last-kbd-macro symbol)
   (let ((kbd-macro (with-current-buffer (get-buffer-create elmacro--tmp-buffer)
                      (insert-kbd-macro symbol)
-                     (buffer-string))))
+                     (buffer-string)))
+        ;; (formatted-symbol (intern (replace-regexp-in-string " " "\ " (symbol-name symbol))))
+        (macro-name (symbol-name symbol)))
     (kill-buffer elmacro--tmp-buffer)
 
-    (add-to-list 'elmacro--named-functions `(,symbol . ,kbd-macro))
+    (add-to-list 'elmacro--named-functions `(,macro-name . ,kbd-macro))
     (elmacro-save-session)))
 
 ;;;###autoload
