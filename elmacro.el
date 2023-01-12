@@ -32,11 +32,23 @@
   :type 'string
   :group 'elmacro)
 
+(defcustom elmacro--include-projectile-name t
+  "If non-nil, include projectile project name in macro name."
+  :type 'boolean
+  :group 'elmacro)
+
 (defvar elmacro--named-functions '()
   "List of macro names.")
 
 (defvar elmacro--tmp-buffer "*elmacro-tmp*"
   "Temporary buffer for storing macros.")
+
+
+(defun elmacro--build-prefix-name ()
+  "Build prefix name for macro."
+  (if (and elmacro--include-projectile-name (fboundp 'projectile-project-name))
+      (format "[%s] " (projectile-project-name))
+    ""))
 
 (defun elmacro-restore-sesstion ()
   "Restore macros from `elmacro-macro-file'."
@@ -62,7 +74,7 @@
 (defun elmacro-name-last-kbd-macro (symbol)
   "Name last kbd macro.
 SYMBOL is the name of the macro."
-  (interactive "SName for last kbd macro: ")
+  (interactive (list (read-string "Name for last kbd macro: " (elmacro--build-prefix-name))))
   (elmacro--restore-session-when-no-data)
   (name-last-kbd-macro symbol)
   (let ((kbd-macro (with-current-buffer (get-buffer-create elmacro--tmp-buffer)

@@ -37,4 +37,6 @@ Package for executing and storing your named macros persistently.
 #+END_SRC
 
 * Configurations
-~elmacro-macro-file~ - file name of stored macros. Default value is ~~/.emacs.d/elmacro-macros.el~
+~elmacro-macro-file~ - file name of stored macros. Default value is =~/.emacs.d/elmacro-macros.el=
+
+~elmacro--include-projectile-name~ - If non-nil, include projectile project name in macro name.
