@@ -5,7 +5,7 @@
 ;; Author: Artur Yaroshenko <artawower@protonmail.com>
 ;; URL: https://github.com/artawower/persistent-kmacro.el
 ;; Package-Requires: ((emacs "28.1"))
-;; Version: 0.0.3
+;; Version: 0.0.4
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -101,8 +101,8 @@ NAME is the name of the macro."
   "Remove macro."
   (interactive)
   (persistent-kmacro--restore-session-when-no-data)
-  (let ((macro (intern (completing-read "Remove macro: " persistent-kmacro--named-functions nil t))))
-    (setq persistent-kmacro--named-functions (delete (assoc macro elmacro--named-functions) elmacro--named-functions))
+  (let ((macro (completing-read "Remove macro: " persistent-kmacro--named-functions nil t)))
+    (setq persistent-kmacro--named-functions (delete (assoc macro persistent-kmacro--named-functions) persistent-kmacro--named-functions))
     (persistent-kmacro-save-session)))
 
 
