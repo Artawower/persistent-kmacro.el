@@ -28,12 +28,9 @@ Package for executing and persistently storing your named macros.
 #+BEGIN_SRC emacs-lisp :results silent
 (use-package persistent-kmacro
   :straight (:host github :repo "artawower/persistent-kmacro.el")
-  :ensure t
-  :defer t
-  :general (:keymaps 'override
-                     :states 'normal
-                     "SPC me" 'persistent-kmacro-execute-macro
-                     "SPC ma" 'persistent-kmacro-name-last-kbd-macro))
+  :bind (:map evil-normal-state-map
+           ("SPC me" . persistent-kmacro-execute-macro)
+           ("SPC ma" . persistent-kmacro-name-last-kbd-macro)))
 #+END_SRC
 
 * Configurations
