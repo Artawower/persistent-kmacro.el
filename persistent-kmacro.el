@@ -67,21 +67,21 @@
 
 (defun persistent-kmacro--restore-session-when-no-data ()
   "Restore session when `persistent-kmacro--named-functions' is empty."
-  (unless persistent-kmacro--named-functions
-    (persistent-kmacro-restore-sesstion)))
+  (ignore-errors (unless persistent-kmacro--named-functions
+    (persistent-kmacro-restore-sesstion))))
 
 ;;;###autoload
-(defun persistent-kmacro-name-last-kbd-macro (symbol)
+(defun persistent-kmacro-name-last-kbd-macro (name)
   "Name last kbd macro.
-SYMBOL is the name of the macro."
+NAME is the name of the macro."
   (interactive (list (read-string "Name for last kbd macro: " (persistent-kmacro--build-prefix-name))))
   (persistent-kmacro--restore-session-when-no-data)
-  (name-last-kbd-macro symbol)
+  (name-last-kbd-macro (intern name))
   (let ((kbd-macro (with-current-buffer (get-buffer-create persistent-kmacro--tmp-buffer)
-                     (insert-kbd-macro symbol)
+                     (insert-kbd-macro (intern name))
                      (buffer-string)))
         ;; (formatted-symbol (intern (replace-regexp-in-string " " "\ " (symbol-name symbol))))
-        (macro-name (symbol-name symbol)))
+        (macro-name (symbol-name (intern name))))
     (kill-buffer persistent-kmacro--tmp-buffer)
 
     (add-to-list 'persistent-kmacro--named-functions `(,macro-name . ,kbd-macro))
