@@ -2,7 +2,7 @@
 :ID: emacs-lisp-macros
 :END:
 
-#+TITLE: Elmacro.
+#+TITLE: Persistent-kmacro.el
 #+html: <span class="badge-buymeacoffee">
 #+html: <a href="https://www.paypal.me/darkawower" title="Paypal" target="_blank"><img src="https://img.shields.io/badge/paypal-donate-blue.svg" alt="Buy Me A Coffee donate button" /></a>
 #+html: </span>
@@ -15,28 +15,28 @@
 #+ID: emacs-lisp-macros
 
 
-Package for executing and storing your named macros persistently.
+Package for executing and persistently storing your named macros.
 
 * Usage 
 #+html: <img src="./images/sombrero.png" align="right" width="18%">
 
 1. Run ~start-kbd-macro~ <your sequence> ~end-kbd-macro~
-2. Define your named macro via ~elmacro-name-last-kbd-macro~
-3. Run ~elmacro-execute-macro~ <your macro name>
+2. Define your named macro via ~persistent-kmacro-name-last-kbd-macro~
+3. Run ~persistent-kmacro-execute-macro~ <your macro name>
 4. Enjoy!
 * Install
 #+BEGIN_SRC emacs-lisp :results silent
-(use-package elmacro
-  :straight (:host github :repo "artawower/elmacro.el")
+(use-package persistent-kmacro
+  :straight (:host github :repo "artawower/persistent-kmacro.el")
   :ensure t
   :defer t
   :general (:keymaps 'override
                      :states 'normal
-                     "SPC me" 'elmacro-execute-macros
-                     "SPC ma" 'elmacro-name-last-kbd-macro))
+                     "SPC me" 'persistent-kmacro-execute-macro
+                     "SPC ma" 'persistent-kmacro-name-last-kbd-macro))
 #+END_SRC
 
 * Configurations
-~elmacro-macro-file~ - file name of stored macros. Default value is =~/.emacs.d/elmacro-macros.el=
+~persistent-kmacro-macro-file~ - file name of stored macros. Default value is =~/.emacs.d/persistent-kmacro.el=
 
-~elmacro--include-projectile-name~ - If non-nil, include projectile project name in macro name.
+~persistent-kmacro-name-last-kbd-macro~ - If non-nil, include projectile project name in macro name.
