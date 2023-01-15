@@ -4,8 +4,8 @@
 
 ;; Author: Artur Yaroshenko <artawower@protonmail.com>
 ;; URL: https://github.com/artawower/persistent-kmacro.el
-;; Package-Requires: ((emacs "28.1"))
-;; Version: 0.0.4
+;; Package-Requires: ((emacs "28.1") (persistent-soft "0.8.10"))
+;; Version: 0.0.5
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -26,8 +26,9 @@
 ;;; Code:
 
 (require 'subr-x)
+(require 'persistent-soft)
 
-(defcustom persistent-kmacro-macro-file "~/.emacs.d/persistent-kmacro.el"
+(defcustom persistent-kmacro-macro-file "persistent-kmacro.el"
   "File where macros are stored."
   :type 'string
   :group 'persistent-kmacro)
@@ -53,22 +54,18 @@
 (defun persistent-kmacro-restore-sesstion ()
   "Restore macros from `persistent-kmacro-macro-file'."
   (interactive)
-  (with-current-buffer (get-buffer-create persistent-kmacro--tmp-buffer)
-    (insert-file-contents persistent-kmacro-macro-file)
-    (unless (equal (string-trim (buffer-string)) "")
-      (setq persistent-kmacro--named-functions (eval (car (read-from-string (format "'%s" (buffer-string))))))))
-  (kill-buffer persistent-kmacro--tmp-buffer))
+  (setq persistent-kmacro--named-functions
+        (persistent-soft-fetch 'persistent-kmacro-named-functions persistent-kmacro-macro-file)))
 
 (defun persistent-kmacro-save-session ()
   "Save macros to `persistent-kmacro-macro-file'."
   (interactive)
-  (with-temp-file persistent-kmacro-macro-file
-    (insert (format "%s\n\n" persistent-kmacro--named-functions))))
+  (persistent-soft-store 'persistent-kmacro-named-functions persistent-kmacro--named-functions persistent-kmacro-macro-file))
 
 (defun persistent-kmacro--restore-session-when-no-data ()
   "Restore session when `persistent-kmacro--named-functions' is empty."
   (ignore-errors (unless persistent-kmacro--named-functions
-    (persistent-kmacro-restore-sesstion))))
+                   (persistent-kmacro-restore-sesstion))))
 
 ;;;###autoload
 (defun persistent-kmacro-name-last-kbd-macro (name)
@@ -79,12 +76,10 @@ NAME is the name of the macro."
   (name-last-kbd-macro (intern name))
   (let ((kbd-macro (with-current-buffer (get-buffer-create persistent-kmacro--tmp-buffer)
                      (insert-kbd-macro (intern name))
-                     (buffer-string)))
-        ;; (formatted-symbol (intern (replace-regexp-in-string " " "\ " (symbol-name symbol))))
-        (macro-name (symbol-name (intern name))))
+                     (buffer-string))))
     (kill-buffer persistent-kmacro--tmp-buffer)
 
-    (add-to-list 'persistent-kmacro--named-functions `(,macro-name . ,kbd-macro))
+    (add-to-list 'persistent-kmacro--named-functions `(,name . ,kbd-macro))
     (persistent-kmacro-save-session)))
 
 ;;;###autoload
@@ -92,11 +87,12 @@ NAME is the name of the macro."
   "Execute macros."
   (interactive)
   (persistent-kmacro--restore-session-when-no-data)
-  (let ((macro (intern (completing-read "Execute macro: " persistent-kmacro--named-functions nil t))))
-    (unless (fboundp macro)
-      (eval (cdr (assoc macro persistent-kmacro--named-functions))))
-    (call-interactively macro)))
+  (let ((macro-name (completing-read "Execute macro: " persistent-kmacro--named-functions nil t)))
+    (unless (fboundp (intern macro-name))
+      (eval (car (read-from-string (cdr (assoc macro-name persistent-kmacro--named-functions))))))
+    (call-interactively (intern macro-name))))
 
+;;;###autoload
 (defun persistent-kmacro-remove-macro ()
   "Remove macro."
   (interactive)

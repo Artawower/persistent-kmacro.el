@@ -25,6 +25,13 @@ Package for executing and persistently storing your named macros.
 3. Run ~persistent-kmacro-execute-macro~ <your macro name>
 4. Enjoy!
 * Install
+Requirements
+
+#+BEGIN_SRC emacs-lisp :results silent
+(use-package persistent-soft
+  :defer t)
+#+END_SRC
+
 #+BEGIN_SRC emacs-lisp :results silent
 (use-package persistent-kmacro
   :straight (:host github :repo "artawower/persistent-kmacro.el")
