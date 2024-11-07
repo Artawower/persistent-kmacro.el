@@ -90,7 +90,43 @@ NAME is the name of the macro."
   (let ((macro-name (completing-read "Execute macro: " persistent-kmacro--named-functions nil t)))
     (unless (fboundp (intern macro-name))
       (eval (car (read-from-string (cdr (assoc macro-name persistent-kmacro--named-functions))))))
-    (call-interactively (intern macro-name))))
+    (call-interactively (intern macro-name))
+    (message "macto wacro: %s" (intern macro-name))
+    ))
+
+;;;###autoload
+(defun persistent-kmacro-apply ()
+  "Apply macro depend on current state."
+  (interactive)
+  (if (use-region-p)
+      (persistent-kmacro-apply-macro-to-region-lines)
+    (persistent-kmacro-execute-macro)))
+
+;;;###autoload
+(defun persistent-kmacro-apply-macro-to-region-lines ()
+  "Execute macros to each line in region."
+  (interactive)
+  (persistent-kmacro--restore-session-when-no-data)
+  (let ((macro-name (persistent-kmacro--select-macro)))
+    (persistent-kmacro--do-lines (lambda () (call-interactively (intern macro-name))))))
+
+
+(defun persistent-kmacro--do-lines (fun)
+  "Invoke function FUN on the text of each line from START to END."
+  (let ((start (if (use-region-p) (region-beginning) (point-min)))
+        (end (if (use-region-p) (region-end) (point-max))))
+    (save-excursion
+      (goto-char start)
+      (while (< (point) end)
+        (funcall fun)
+        (forward-line 1)))))
+
+(defun persistent-kmacro--select-macro ()
+  "Select macro from completion list."
+  (let ((macro-name (completing-read "Execute macro: " persistent-kmacro--named-functions nil t)))
+    (unless (fboundp (intern macro-name))
+      (eval (car (read-from-string (cdr (assoc macro-name persistent-kmacro--named-functions))))))
+    macro-name))
 
 ;;;###autoload
 (defun persistent-kmacro-remove-macro ()
